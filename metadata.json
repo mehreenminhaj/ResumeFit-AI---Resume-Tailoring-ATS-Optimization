@@ -1,0 +1,6 @@
+{
+  "name": "ResumeFit AI - Resume Tailoring & ATS Optimization",
+  "description": "AI-powered resume tailoring assistant that matches your actual experience to job descriptions, highlights skill gaps, crafts truthful ATS-optimized bullet points without hallucinations, and generates tailored resumes.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

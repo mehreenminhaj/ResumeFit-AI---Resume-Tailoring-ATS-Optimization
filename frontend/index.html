@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ResumeFit AI - Resume Tailoring & ATS Optimization Assistant</title>
+  <meta name="description" content="AI-powered resume tailoring assistant that matches your actual experience to job descriptions, highlights skill gaps, crafts truthful ATS-optimized bullet points without hallucinations, and generates tailored resumes.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Header / Navigation -->
+  <header class="app-header">
+    <div class="header-inner">
+      <div class="brand">
+        <div class="brand-icon">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <line x1="16" y1="13" x2="8" y2="13"></line>
+            <line x1="16" y1="17" x2="8" y2="17"></line>
+            <polyline points="10 9 9 9 8 9"></polyline>
+          </svg>
+        </div>
+        <div>
+          <h1 class="brand-title">ResumeFit <span class="brand-accent">AI</span></h1>
+          <p class="brand-subtitle">ATS Resume Tailoring & Optimization Assistant</p>
+        </div>
+      </div>
+
+      <nav class="nav-tabs">
+        <button id="tab-tailor-btn" class="nav-tab active" data-tab="tailor-view">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+          Resume Studio
+        </button>
+        <button id="tab-tracker-btn" class="nav-tab" data-tab="tracker-view">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+          Applications Tracker
+        </button>
+        <button id="tab-cli-btn" class="nav-tab" data-tab="cli-view">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 17 10 11 4 5"></polyline><line x1="12" y1="19" x2="20" y2="19"></line></svg>
+          CLI MVP Terminal
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Strict Anti-Hallucination Assurance Banner -->
+  <div class="guarantee-banner">
+    <div class="banner-inner">
+      <span class="shield-badge">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+        Strict Truth Guarantee
+      </span>
+      <p class="banner-text">ResumeFit AI <strong>never invents experience</strong>, fake employers, degrees, or unverified technologies. Missing JD requirements are flagged for honest skill acquisition rather than fabricated.</p>
+    </div>
+  </div>
+
+  <main class="main-content">
+    <!-- VIEW 1: RESUME STUDIO -->
+    <section id="tailor-view" class="view-panel active">
+      <div class="studio-grid">
+        <!-- Input Column: Resume + JD -->
+        <div class="input-panel">
+          <!-- Step 1: Resume Upload / Text -->
+          <div class="card">
+            <div class="card-header">
+              <div class="step-badge">1</div>
+              <div>
+                <h2 class="card-title">Candidate Resume</h2>
+                <p class="card-description">Upload PDF/DOCX or paste resume text</p>
+              </div>
+              <div class="sample-actions">
+                <button id="load-sample-resume-btn" class="btn-ghost" title="Load sample Python Backend Engineer resume">
+                  Load Sample CV
+                </button>
+              </div>
+            </div>
+
+            <!-- Drag and drop zone -->
+            <div id="drop-zone" class="drop-zone">
+              <input type="file" id="resume-file-input" accept=".pdf,.docx,.txt" class="file-input-hidden">
+              <div class="drop-zone-content">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" class="drop-icon">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                  <polyline points="17 8 12 3 7 8"></polyline>
+                  <line x1="12" y1="3" x2="12" y2="15"></line>
+                </svg>
+                <p class="drop-title">Drop your resume PDF or DOCX here</p>
+                <p class="drop-hint">or <span class="browse-link">browse files</span> from your computer</p>
+              </div>
+            </div>
+
+            <div id="uploaded-file-info" class="file-info-bar hidden">
+              <div class="file-name-wrap">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+                <span id="uploaded-filename">my_resume.pdf</span>
+              </div>
+              <button id="clear-file-btn" class="btn-icon-tiny" title="Remove file">✕</button>
+            </div>
+
+            <!-- Collapsible Raw Text Editor -->
+            <div class="text-toggle-row">
+              <button id="toggle-resume-text-btn" class="text-toggle-btn">
+                <span>View / Edit Raw Resume Text</span>
+                <span class="toggle-arrow">▾</span>
+              </button>
+            </div>
+            <div id="resume-text-container" class="raw-text-wrapper hidden">
+              <textarea id="resume-text-area" rows="8" placeholder="Paste full resume text here..." class="form-textarea"></textarea>
+            </div>
+          </div>
+
+          <!-- Step 2: Job Description -->
+          <div class="card">
+            <div class="card-header">
+              <div class="step-badge">2</div>
+              <div>
+                <h2 class="card-title">Target Job Description</h2>
+                <p class="card-description">Paste requirements or import via posting URL</p>
+              </div>
+              <div class="sample-actions">
+                <button id="load-sample-jd-btn" class="btn-ghost" title="Load sample Senior Python / FastAPI JD">
+                  Load Sample JD
+                </button>
+              </div>
+            </div>
+
+            <!-- URL input option -->
+            <div class="url-input-wrap">
+              <input type="url" id="jd-url-input" placeholder="https://company.com/careers/senior-python-engineer" class="form-input">
+              <button id="fetch-jd-url-btn" class="btn-secondary">Fetch URL</button>
+            </div>
+
+            <div class="divider-text"><span>OR PASTE TEXT</span></div>
+
+            <textarea id="jd-text-area" rows="8" placeholder="Paste the job description, required skills, and responsibilities here..." class="form-textarea"></textarea>
+          </div>
+
+          <!-- Action CTA -->
+          <div class="cta-wrap">
+            <button id="analyze-match-btn" class="btn-primary">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+              Analyze & Tailor Resume
+            </button>
+          </div>
+        </div>
+
+        <!-- Output Column: Analysis, Gaps & Tailored Resume -->
+        <div class="output-panel">
+          <!-- Empty State -->
+          <div id="empty-state" class="empty-state-card">
+            <div class="empty-icon-wrap">
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+                <path d="M9 15h6"></path>
+                <path d="M9 11h6"></path>
+              </svg>
+            </div>
+            <h3 class="empty-title">Ready for Analysis</h3>
+            <p class="empty-desc">Provide your resume and a target job description on the left. Click "Analyze & Tailor Resume" to inspect skill match score, missing keywords, truthful bullet rewrites, and export your optimized resume.</p>
+            <div class="quick-try">
+              <button id="quick-demo-btn" class="btn-outline">Try with Sample Data</button>
+            </div>
+          </div>
+
+          <!-- Loading State -->
+          <div id="loading-state" class="loading-card hidden">
+            <div class="spinner"></div>
+            <h3 id="loading-step-title" class="loading-title">Extracting resume & parsing job requirements...</h3>
+            <p id="loading-step-desc" class="loading-desc">Comparing technical skills, computing semantic overlaps, and validating truth compliance.</p>
+          </div>
+
+          <!-- Results Section (Visible after analysis) -->
+          <div id="results-container" class="results-container hidden">
+            <!-- Score Card -->
+            <div class="card score-hero-card">
+              <div class="score-main">
+                <div class="score-circle-wrap">
+                  <div class="score-circle">
+                    <span id="score-number" class="score-number">78</span>
+                    <span class="score-percent">%</span>
+                  </div>
+                  <span class="score-label">Overall ATS Match</span>
+                </div>
+                <div class="score-details">
+                  <h3 id="target-role-heading" class="role-heading">Senior Backend Engineer</h3>
+                  <p id="target-company-text" class="company-text">Target Employer · Full-time</p>
+                  <div class="metrics-grid">
+                    <div class="metric-item">
+                      <span class="metric-label">Required Skills</span>
+                      <span id="metric-req-score" class="metric-val">82%</span>
+                    </div>
+                    <div class="metric-item">
+                      <span class="metric-label">Preferred Skills</span>
+                      <span id="metric-pref-score" class="metric-val">65%</span>
+                    </div>
+                    <div class="metric-item">
+                      <span class="metric-label">Keyword Density</span>
+                      <span id="metric-kw-score" class="metric-val">74%</span>
+                    </div>
+                    <div class="metric-item">
+                      <span class="metric-label">Experience Relevance</span>
+                      <span id="metric-exp-score" class="metric-val">90%</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Export bar -->
+              <div class="export-actions-bar">
+                <button id="export-docx-btn" class="btn-success">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                  Export Word (.docx)
+                </button>
+                <button id="export-report-btn" class="btn-secondary">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+                  Download Report (.md)
+                </button>
+                <button id="save-app-btn" class="btn-secondary">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+                  Save to Tracker
+                </button>
+              </div>
+            </div>
+
+            <!-- Skill Gap Breakdown: Matched vs Missing -->
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title">Skill Match & Gaps Analysis</h3>
+                <span class="truth-verified-tag">✓ Anti-Fabrication Verified</span>
+              </div>
+
+              <div class="skills-split-layout">
+                <!-- Matched Skills -->
+                <div class="skills-column matched-column">
+                  <div class="col-header">
+                    <span class="check-icon">✓</span>
+                    <h4 class="col-title">Matched Skills (<span id="matched-count">0</span>)</h4>
+                  </div>
+                  <ul id="matched-skills-list" class="skill-tags-list">
+                    <!-- Populated dynamically -->
+                  </ul>
+                </div>
+
+                <!-- Missing Skills with Guidance -->
+                <div class="skills-column missing-column">
+                  <div class="col-header">
+                    <span class="warn-icon">!</span>
+                    <h4 class="col-title">Missing Skills (<span id="missing-count">0</span>)</h4>
+                  </div>
+                  <div id="missing-skills-container" class="missing-cards-list">
+                    <!-- Populated dynamically -->
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- ATS Keyword Table -->
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title">ATS Keyword Frequency Comparison</h3>
+                <p class="card-description">High-frequency keywords scanned by Applicant Tracking Systems</p>
+              </div>
+              <div class="table-responsive">
+                <table class="ats-table">
+                  <thead>
+                    <tr>
+                      <th>Keyword / Technology</th>
+                      <th>JD Occurrences</th>
+                      <th>Resume Occurrences</th>
+                      <th>ATS Status</th>
+                    </tr>
+                  </thead>
+                  <tbody id="keywords-table-body">
+                    <!-- Populated dynamically -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Interactive Bullet Rewriter Studio -->
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title">Interactive Bullet Point Rewriter</h3>
+                <p class="card-description">Fine-tune individual accomplishments using the XYZ formula while preserving truth</p>
+              </div>
+
+              <div class="bullet-tool-wrap">
+                <label class="form-label">Select Experience Bullet to Optimize:</label>
+                <select id="bullet-select" class="form-select"></select>
+
+                <div class="bullet-actions-row">
+                  <button id="rewrite-bullet-btn" class="btn-primary-sm">Generate 3 Truthful Rewrites</button>
+                </div>
+
+                <div id="rewrites-options-container" class="rewrites-container hidden">
+                  <!-- Populated dynamically -->
+                </div>
+              </div>
+            </div>
+
+            <!-- Tailored Resume Document Preview -->
+            <div class="card document-preview-card">
+              <div class="card-header preview-header">
+                <div>
+                  <h3 class="card-title">Tailored Resume Output</h3>
+                  <p class="card-description">Truthfully structured, single-column ATS document</p>
+                </div>
+                <button id="copy-markdown-btn" class="btn-ghost-sm">Copy Plain Text</button>
+              </div>
+
+              <div id="resume-preview-document" class="document-page">
+                <!-- Rendered Document -->
+              </div>
+            </div>
+
+            <!-- Recommended Changes Log -->
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title">Optimization Change Log</h3>
+                <p class="card-description">Full transparent explanation of every modification</p>
+              </div>
+              <div id="changes-log-container" class="changes-list">
+                <!-- Populated dynamically -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW 2: APPLICATIONS TRACKER -->
+    <section id="tracker-view" class="view-panel hidden">
+      <div class="tracker-layout">
+        <div class="tracker-header-row">
+          <div>
+            <h2 class="view-title">Job Application Tracker & Analytics</h2>
+            <p class="view-description">Track tailored resumes, target companies, match scores, and skill market demand.</p>
+          </div>
+          <button id="add-manual-app-btn" class="btn-primary-sm">+ Add Application</button>
+        </div>
+
+        <!-- Analytics Overview Cards -->
+        <div class="analytics-metrics-row">
+          <div class="analytics-stat-card">
+            <span class="stat-number" id="stat-total-apps">0</span>
+            <span class="stat-label">Applications Saved</span>
+          </div>
+          <div class="analytics-stat-card">
+            <span class="stat-number" id="stat-avg-match">0%</span>
+            <span class="stat-label">Average Match Score</span>
+          </div>
+          <div class="analytics-stat-card">
+            <span class="stat-number" id="stat-interviewing-count">0</span>
+            <span class="stat-label">Active Interviews</span>
+          </div>
+        </div>
+
+        <!-- In-Demand Skills Analytics -->
+        <div class="card">
+          <h3 class="card-title">Most Requested Skills in Your Target Roles</h3>
+          <p class="card-description">Aggregated frequency across all analyzed job descriptions</p>
+          <div id="skills-demand-bars" class="demand-bars-container">
+            <!-- Populated dynamically -->
+          </div>
+        </div>
+
+        <!-- Applications Table -->
+        <div class="card">
+          <div class="table-responsive">
+            <table class="applications-table">
+              <thead>
+                <tr>
+                  <th>Company</th>
+                  <th>Target Role</th>
+                  <th>Date</th>
+                  <th>Match %</th>
+                  <th>Missing Gaps</th>
+                  <th>Status</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="applications-table-body">
+                <!-- Populated dynamically -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW 3: CLI MVP TERMINAL EMULATOR -->
+    <section id="cli-view" class="view-panel hidden">
+      <div class="cli-terminal-wrap">
+        <div class="terminal-bar">
+          <div class="terminal-dots">
+            <span class="dot red"></span>
+            <span class="dot yellow"></span>
+            <span class="dot green"></span>
+          </div>
+          <div class="terminal-title">bash - python -m app.cli (ResumeFit AI Terminal MVP)</div>
+          <div class="terminal-actions">
+            <button id="cli-help-btn" class="terminal-action-btn">Help</button>
+            <button id="cli-clear-btn" class="terminal-action-btn">Clear</button>
+          </div>
+        </div>
+
+        <div id="terminal-screen" class="terminal-screen">
+          <div class="terminal-welcome">
+            <pre class="ascii-art">
+  ____                                _____ _ _        _    ___ 
+ |  _ \ ___  ___ _   _ _ __ ___   ___|  ___(_) |_     / \  |_ _|
+ | |_) / _ \/ __| | | | '_ ` _ \ / _ \ |_  | | __|   / _ \  | | 
+ |  _ <  __/\__ \ |_| | | | | | |  __/  _| | | |_   / ___ \ | | 
+ |_| \_\___||___/\__,_|_| |_| |_|\___|_|   |_|\__| /_/   \_\___|
+            </pre>
+            <p>Welcome to <strong>Resume Tailoring Assistant CLI MVP v1.0</strong></p>
+            <p>Type <code class="cli-code">help</code> to inspect available commands or <code class="cli-code">run demo</code> to execute the full analysis pipeline.</p>
+            <p class="cli-divider">────────────────────────────────────────────────────────────────────────</p>
+          </div>
+          <div id="terminal-history"></div>
+          <div class="terminal-input-row">
+            <span class="terminal-prompt">$ resumefit &gt;</span>
+            <input type="text" id="terminal-input" class="terminal-input" placeholder="type 'help' or 'run demo'..." autofocus>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="app-footer">
+    <div class="footer-inner">
+      <p class="footer-copy">ResumeFit AI · Resume Tailoring Assistant · Truth-Preserving ATS Optimization Engine</p>
+      <div class="footer-links">
+        <span class="tech-tag">Python · FastAPI · PyMuPDF · python-docx · NLP · LLM</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
